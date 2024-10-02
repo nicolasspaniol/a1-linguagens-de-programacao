@@ -5,3 +5,4 @@ Trabalho para a disciplina de Linguagens de Programação na FGV EMAp. Analisamo
 2. Quais foram as compras de jogadores com melhores e piores custo-benefício registradas?
 3. A posição dos jogadores em campo influencia na quantidade de cartões que estes recebem?
 4. Vendas e compras posteriores de um jogador por um mesmo time costumam gerar lucro para o time?
+5. Jogadores com preço fora do comum tem o desempenho proporcional?
