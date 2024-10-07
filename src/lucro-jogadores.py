@@ -2,6 +2,9 @@ import pandas as pd
 from datetime import date, datetime
 import locale
 import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 sns.set_theme(style="ticks", palette="pastel")
 locale.setlocale(locale.LC_ALL, '')
@@ -63,12 +66,19 @@ for _, row in transfers.iterrows():
     possible_buybacks.append(bb)
 
 
-buybacks: pd.DataFrame = pd.DataFrame(buybacks_list)
+buybacks = pd.DataFrame(buybacks_list)
 buybacks['balance'] = buybacks['fee_sold'] - buybacks['fee_bought']
 buybacks['interval'] = buybacks['age_bought'] - buybacks['age_sold']
 
-print(f'saldo médio: {locale.currency(buybacks['balance'].mean(), grouping=True)}')
-print(f'desvio padrão do saldo: {locale.currency(buybacks['balance'].std(), grouping=True)}')
-print(f'intervalo médio: {round(buybacks['interval'].mean(), 1)}')
-print(f'idade média de venda: {round(buybacks['age_sold'].mean(), 1)}')
-print(f'idade média de compra: {round(buybacks['age_bought'].mean(), 1)}')
+print(buybacks)
+print(f'n: {len(buybacks)}')
+
+print(f'saldo (mediana): {locale.currency(buybacks['balance'].median(), grouping=True)}')
+print(f'saldo (desvio padrão): {locale.currency(buybacks['balance'].std(), grouping=True)}')
+print(f'intervalo (média): {round(buybacks['interval'].mean(), 1)}')
+print(f'idade de venda (média): {round(buybacks['age_sold'].mean(), 1)}')
+print(f'idade de compra (média): {round(buybacks['age_bought'].mean(), 1)}')
+
+# sns.boxplot(x=buybacks['balance'])
+sns.boxplot(x=buybacks['interval'])
+plt.show()
