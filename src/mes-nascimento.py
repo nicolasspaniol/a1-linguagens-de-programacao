@@ -8,15 +8,19 @@ sns.set_theme(style="ticks", palette="pastel")
 
 players = pd.read_csv('data/players.csv')
 
-# Define uma função para deixar a data no formato certo
 def parse_date(date_str: str) -> date:
     if len(date_str) > 10:
         return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').date()
     return datetime.strptime(date_str, '%Y-%m-%d').date()
 
-# Define uma função que extrai o mês do aniversário do jogador
-def extract_month_of_birth(r):
-    birth_date = r["date_of_birth"]
+def extract_month_of_birth(row):
+    """ Extrai o mês da data de nascimento do jogador,
+        aplicando a função parse_date() e retirando o mês da data obtida
+
+        :param row: linha da tabela
+        :return: mês do nascimento de 1.0 a 12.0
+    """
+    birth_date = row["date_of_birth"]
     if type(birth_date) == str:
         return parse_date(birth_date).month
     return None
