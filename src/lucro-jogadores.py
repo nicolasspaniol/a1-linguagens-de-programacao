@@ -12,11 +12,15 @@ locale.setlocale(locale.LC_ALL, '')
 players = pd.read_csv('data/players.csv')
 transfers = pd.read_csv('data/transfers.csv')
 
-# filtra o dataset, removendo transferências sem valor definido
+# Filtra o dataset, removendo transferências sem valor definido, e ordena
 transfers = transfers.loc[transfers['transfer_fee'] > 0].sort_values(['player_id', 'transfer_date'])
 
 
 def parse_date(date_str: str) -> date:
+    """ Converte uma string representando uma data para um objeto `datetime.date`.
+        As datas devem estar formatadas como `YYYY-mm-dd HH:MM:SS` ou
+        `YYYY-mm-dd`.
+    """
     if len(date_str) > 10:
         return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').date()
        
@@ -35,16 +39,18 @@ def find_age(current_date: date, id: int):
 # Para a hipótese atual, considerei como buyback a sequência dos eventos de
 # venda e compra, nessa ordem, de um mesmo jogador por parte de um mesmo time
 buybacks_list = []
-current_player_id = 0
+current_player_id = -1
 possible_buybacks = []
 for _, row in transfers.iterrows():
     id = row['player_id']
 
-    # se o ID do jogador mudou, desconsidera os buybacks pendentes
+    # Se o ID do jogador mudou, desconsidera os buybacks pendentes
     if (current_player_id != id):
         possible_buybacks = []
     current_player_id = id
 
+    # Aqui verificamos se o jogador foi anteriormente vendido pelo time que
+    # está comprando-o na transferência atual
     for bb in possible_buybacks:
         if bb['club_id'] != row['to_club_id']: continue
 
@@ -55,7 +61,7 @@ for _, row in transfers.iterrows():
 
     dt = parse_date(row['transfer_date'])
     age_sold = find_age(dt, id)
-    # supomos que o jogador será comprado pelo time posteriormente e já
+    # Supomos que o jogador será comprado pelo time posteriormente e já
     # preenchemos as informações do buyback com o que temos
     bb = {
         'player_id': id,
@@ -80,5 +86,5 @@ print(f'idade de venda (média): {round(buybacks['age_sold'].mean(), 1)}')
 print(f'idade de compra (média): {round(buybacks['age_bought'].mean(), 1)}')
 
 # sns.boxplot(x=buybacks['balance'])
-sns.boxplot(x=buybacks['interval'])
+sns.boxplot(y=buybacks['interval'])
 plt.show()
