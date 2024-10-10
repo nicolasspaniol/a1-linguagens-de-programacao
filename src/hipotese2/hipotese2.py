@@ -107,7 +107,7 @@ def calc_mean_price(player_valuations):
         market_value = each_row_player_valuations['market_value_in_eur']
         start_date = parse_date(each_row_player_valuations['date'])
         if index < len(player_valuations) - 1:
-            final_date = parse_date(transfers_player.loc[index+1,'date'])
+            final_date = parse_date(player_valuations.loc[index+1,'date'])
         else:
             final_date = datetime.now().date()
         diferenca = final_date - start_date
