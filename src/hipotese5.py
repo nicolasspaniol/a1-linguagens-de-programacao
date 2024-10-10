@@ -62,6 +62,7 @@ upper_limit = calc_upper_limit(merged["mean_price"])
 performance_upper = merged[merged["mean_price"] >= upper_limit]
 
 print(performance_upper.describe())
+print(np.corrcoef(performance_upper["performance"], performance_upper["mean_price"])[0,1])
 sns.scatterplot(data=performance_upper, x="log_mean_price", y="performance", color="red")
 plt.show()
 
