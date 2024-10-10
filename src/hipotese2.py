@@ -2,36 +2,11 @@ from datetime import date, datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-import os
 
 """
 Quais foram as compras de jogadores com melhores e 
 piores custo-benefício registradas?
 """
-
-def create_h2(path):
-    #Criação do arquivo CSV, caso ainda não criado
-    #if not os.path.exists(PATH):
-        cost_benefit = pd.DataFrame({
-            "player_id": [],
-            "from_club_id": [],
-            "to_club_id": [],
-            "date": [],
-            "cost_benefit": []
-        })
-        cost_benefit.to_csv(path, index=False)
-        return
-
-def create_h5(path):
-    #Criação do arquivo CSV, caso ainda não criado
-    #if not os.path.exists(PATH):
-        cost_benefit = pd.DataFrame({
-            "player_id": [],
-            "mean_price": [],
-            "performance": []
-        })
-        cost_benefit.to_csv(path, index=False)
-        return
 
 def add_h2(path, player_id, from_club_id, to_club_id, date, cb):
     #Inserção de cada transferência ao CSV
@@ -56,7 +31,7 @@ def add_h5(path, player_id, mean_price, performance):
     return
 
 def open_csv(arquivo):
-    with open('data/'+arquivo+'.csv', 'r', encoding='latin1') as file:
+    with open('../data/'+arquivo+'.csv', 'r', encoding='latin1') as file:
         return pd.read_csv(file)
 
 def get_parameters(start_price, final_price, start_date, final_date, appearances_player):
@@ -127,14 +102,38 @@ game_events = open_csv("game_events")
 player_valuations = open_csv("player_valuations")
 players = open_csv("players")
 transfers = open_csv("transfers")
+cost_benefit = pd.DataFrame({
+        "player_id": [],
+        "from_club_id": [],
+        "to_club_id": [],
+        "date": [],
+        "cost_benefit": []
+    })
+performance = pd.DataFrame({
+        "player_id": [],
+        "mean_price": [],
+        "performance": []
+    })
 
+#Limpar as tabelas utilizadas
 appearances.dropna(axis=0, inplace=True) 
 game_events.dropna(axis=0, inplace=True)
 player_valuations.dropna(axis=0, inplace=True)
 players.dropna(axis=0, subset=["market_value_in_eur"], inplace=True)
 transfers.dropna(axis=0, subset=["market_value_in_eur"], inplace=True)
 
-create_h2('../data/cost_benefit2.csv')
+
+
+
+player_valuations.sort_values(['player_id', 'date'], ascending=True, inplace=True)
+player_valuations["date"].diff()
+
+
+players["mean_price"] = calc_mean_price(player_valuations)
+
+appearances.sort_values('player_id', ascending=True, inplace=True)
+players["performance"] = proxy2(appearances)
+
 #Para cada jogador catalogado em "players"
 for player_id in players['player_id']:
     transfers_player = transfers.loc[transfers['player_id'] == player_id]
@@ -168,19 +167,9 @@ for player_id in players['player_id']:
             data_parameters_total = update_parameters(data_parameters_total, data_parameters)
             if data_parameters["games_played"] != 0:
                 add_h2('../data/cost_benefit2.csv', player_id, from_club_id, to_club_id, start_date, proxy(**data_parameters))
-        create_h5('../data/performance.csv')
-        add_h5('../data/performance.csv', player_id, mean_price, proxy2(**data_parameters_total))
+        if data_parameters_total["games_played"] != 0:
+            add_h5('../data/performance.csv', player_id, mean_price, proxy2(**data_parameters_total))
 
-cost_benefit = open_csv("cost_benefit")
-cost_benefit.sort_values(by='cost_benefit', ascending=True, inplace=True)
-print(cost_benefit.describe())
-sns.boxplot(data=cost_benefit, y="cost_benefit")
-plt.ylim(-200, 200)
-plt.show()
 
-performance = open_csv("performance")
-performance.sort_values(by='mean_price', ascending=False, inplace=True)
-print(performance.describe())
-sns.scatterplot(data=performance, x="mean_price", y="performance", color="green")
-plt.show()
+
 
