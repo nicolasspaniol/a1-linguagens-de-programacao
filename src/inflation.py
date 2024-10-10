@@ -2,6 +2,7 @@
 
 import pandas as pd
 from datetime import datetime
+import math
 
 
 def inflation_adj(value: float, period: datetime):
@@ -13,6 +14,18 @@ def inflation_adj(value: float, period: datetime):
         considerado
         :return: valor corrigido
     """
+
+    if value < 0:
+        raise ValueError("O parâmetro 'value' não pode ser negativo")
+
+    if math.isnan(value):
+        raise ValueError("O parâmetro 'value' não pode ser NaN")
+
+    if period < datetime(1997, 1, 1):
+        raise ValueError("O parâmetro 'period' deve representar uma data posterior a 1996")
+
+    if period > datetime(2024, 9, 30):
+        raise ValueError("O parâmetro 'period' deve representar uma data anterior a outubro de 2024")
 
     period_str = period.strftime("%Y-%m")
     now = df.loc[df["period"] == "2024-09"].iloc[0]["cum_inflation"]
