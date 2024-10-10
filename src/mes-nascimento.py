@@ -31,25 +31,17 @@ def extract_month_of_birth(row):
 # Cria uma nova coluna na tabela com o mês do aniversário de cada jogador
 players["month_of_birth"] = players.apply(extract_month_of_birth,axis=1)
 
-# Cria uma tabela com a frequência de aniversariantes por mês
+# Cria uma tabela com a quantidade de aniversariantes por mês
 month_frequency = players.groupby(["month_of_birth"]).size().reset_index(name="count")
 
+# Adiciona uma coluna com a proporção de aniversariantes por mês
+quantity_players = month_frequency["count"].sum()
+month_frequency["frequency"] = month_frequency["count"]/quantity_players
 
-def chi2(series: pd.Series):
-    """ Calcula o Qui^2 de uma série de valores, tomando como valor esperado a média.
-
-        :param series: lista de números
-        :return: o Qui^2 calculado
-    """
-    expected = series.mean()
-    return (np.square(series - expected) / expected).sum()
-    
-
-sns.barplot(month_frequency, x="month_of_birth", y="count")
+sns.barplot(month_frequency, x="month_of_birth", y="frequency")
 plt.show()
 
-# Calcula o Qui^2 da distribuição da quantidade de jugadores por mês
-chi2_count = chi2(month_frequency["count"])
-n = month_frequency["count"].sum()
-C = (chi2_count/(chi2_count + n)) ** .5
-print(f"Coeficiente de contingência: {C}")
+# Calcula o desvio padrão da distribuição da quantidade de jugadores por mês
+dp = month_frequency["count"].std()
+print(f"Desvio padrão de aniversariantes por mês: {dp}")
+
