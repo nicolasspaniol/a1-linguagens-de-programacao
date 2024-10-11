@@ -100,5 +100,5 @@ print(cost_benefit)
 #Plotando o gráfico
 print(cost_benefit[["cost_benefit"]].describe())
 sns.boxplot(data=cost_benefit,  y="cost_benefit", color="red")
-plt.ylim(-5, 100)
+plt.ylim(-5, 8)
 plt.show()

@@ -68,29 +68,20 @@ player_valuations = pd.read_csv('../data/player_valuations.csv')
 appearances.dropna(axis=0, subset=["yellow_cards", "red_cards", "goals", "assists"], inplace=True) 
 player_valuations.dropna(axis=0, subset=["market_value_in_eur", "date"], inplace=True)
 
-print(player_valuations)
-
 #Criando mean_price
 #Ordenar os dados, converter data, corrigir valores, criar colunas same_player e date_diff, calcular a média ponderada
 player_valuations.sort_values(['player_id', 'date'], ascending=True, inplace=True)
 player_valuations["date"] = pd.to_datetime(player_valuations["date"], yearfirst=True)
 player_valuations['market_value_in_eur'] = player_valuations.apply(lambda row: inflation.inflation_adj(row['market_value_in_eur'], row['date']), axis=1)
-
-print(player_valuations)
-
 player_valuations["same_player"] = -player_valuations["player_id"].diff(-1) == 0
 player_valuations["date_diff"] = -player_valuations["date"].diff(-1)
 player_valuations["date_diff"] = player_valuations.apply(correct_data_diff, axis=1)
 mean_price = player_valuations.groupby("player_id").apply(calc_mean_price).reset_index(name="mean_price")
 
-print(mean_price)
-
 #Criando performance
 #Ordenar os dados, calcular performance do jogador
 appearances.sort_values('player_id', ascending=True, inplace=True)
 performance = appearances.groupby(["player_id", "player_name"]).apply(calc_performance).reset_index(name="performance")
-
-print(performance)
 
 #Unindo os dados
 merged = pd.merge(performance, mean_price, how="left", on="player_id").dropna(axis=0).sort_values("mean_price", ascending=True)
@@ -99,9 +90,6 @@ merged = pd.merge(performance, mean_price, how="left", on="player_id").dropna(ax
 merged["log_mean_price"] = np.log(merged["mean_price"])
 upper_limit = calc_upper_limit(merged["mean_price"])
 performance_upper = merged[merged["mean_price"] >= upper_limit]
-
-print("oi5")
-print(performance_upper)
 
 #Plotando os gráficos
 print(performance_upper.describe())
