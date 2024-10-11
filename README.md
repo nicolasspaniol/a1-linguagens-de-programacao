@@ -6,3 +6,15 @@ Trabalho para a disciplina de Linguagens de Programação na FGV EMAp. Analisamo
 3. A posição dos jogadores em campo influencia na quantidade de cartões que estes recebem?
 4. Vendas e compras posteriores de um jogador por um mesmo time costumam gerar lucro para o time?
 5. Jogadores com preço fora do comum tem o desempenho proporcional?
+
+## Testes unitários
+
+Para rodar todos os testes, execute:
+```bash
+  PYTHONPATH=src python -m unittest discover tests 
+```
+
+Para rodar apenas um dos arquivos de teste, execute:
+```bash
+  PYTHONPATH=src python tests/test_[arquivo].py 
+```
