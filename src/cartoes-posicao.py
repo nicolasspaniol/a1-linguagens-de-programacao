@@ -38,11 +38,7 @@ merged["rel_count"] = merged.apply(calc_rel_count, axis=1)
 
 # Filtra posições com quantidade insuficiente de dados
 merged = merged.loc[merged["total_count"] > 150]
-<<<<<<< HEAD
 print(f"n = {merged['count'].sum()}")
-=======
-print(f"n = {merged["count"].sum()}")
->>>>>>> parent of 54c6129 (Organização)
 
 # Gráfico de barras - quantidade de cartões recebidos por posição em campo
 ax = sns.barplot(
