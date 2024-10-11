@@ -92,11 +92,11 @@ buybacks["interval"] = buybacks["age_bought"] - buybacks["age_sold"]
 # ------------------------------------------------------------------------------
 
 print(f"n: {len(buybacks)}")
-print(f"saldo (mediana): {locale.currency(buybacks["balance"].median(), grouping=True)}")
-print(f"saldo (desvio padrão): {locale.currency(buybacks["balance"].std(), grouping=True)}")
-print(f"intervalo (média): {round(buybacks["interval"].mean(), 1)}")
-print(f"idade de venda (média): {round(buybacks["age_sold"].mean(), 1)}")
-print(f"idade de compra (média): {round(buybacks["age_bought"].mean(), 1)}")
+print(f"saldo (mediana): {locale.currency(buybacks['balance'].median(), grouping=True)}")
+print(f"saldo (desvio padrão): {locale.currency(buybacks['balance'].std(), grouping=True)}")
+print(f"intervalo (média): {round(buybacks['interval'].mean(), 1)}")
+print(f"idade de venda (média): {round(buybacks['age_sold'].mean(), 1)}")
+print(f"idade de compra (média): {round(buybacks['age_bought'].mean(), 1)}")
 
 sns.boxplot(y=buybacks["sqrt_balance"])
 plt.show()
