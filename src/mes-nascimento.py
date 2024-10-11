@@ -17,10 +17,7 @@ def extract_month_of_birth(row):
         :param row: linha da tabela
         :return: mês do nascimento de 1.0 a 12.0
     """
-    birth_date = row["date_of_birth"]
-    if type(birth_date) == str:
-        return birth_date.month
-    return None
+    return row["date_of_birth"].month
 
 
 # Cria uma nova coluna na tabela com o mês do aniversário de cada jogador
