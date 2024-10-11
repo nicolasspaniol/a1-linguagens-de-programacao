@@ -3,24 +3,12 @@ from datetime import date, datetime
 import locale
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 import numpy as np
+import math
 
 
-def parse_date(date_str: str) -> date:
-    """ Converte uma string representando uma data para um objeto
-        `datetime.date`. As datas devem estar formatadas como
-        `YYYY-mm-dd HH:MM:SS` ou `YYYY-mm-dd`.
-
-        :param date_str: a string com a data em um dos formatos esperados
-        :return: a data como um objeto `datetime.date`
-    """
-    if len(date_str) > 10:
-        return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S").date()
-       
-    return datetime.strptime(date_str, "%Y-%m-%d").date()
-
-
-def find_age(current_date: date, id: int) -> float:
+def find_age(current_date, id: int) -> float:
     """ Encontra a idade de um jogador de ID `id` no momento `current_date`, a
         partir das informações do jogador contidas no arquivo `players.csv`.
 
@@ -33,7 +21,7 @@ def find_age(current_date: date, id: int) -> float:
         return None
 
     birth = datetime.strptime(p["date_of_birth"], "%Y-%m-%d %H:%M:%S").date()
-    return (current_date - birth).days / 365
+    return (current_date.date() - birth).days / 365
 
 
 # Configurações
@@ -42,6 +30,7 @@ locale.setlocale(locale.LC_ALL, "")
 
 players = pd.read_csv("data/players.csv")
 transfers = pd.read_csv("data/transfers.csv")
+transfers["transfer_date"] = pd.to_datetime(transfers["transfer_date"])
 
 # Filtra o dataset, removendo transferências sem valor reportado, e ordena
 transfers = transfers.loc[transfers["transfer_fee"] > 0]
@@ -66,13 +55,11 @@ for _, row in transfers.iterrows():
         if bb["club_id"] != row["to_club_id"]: continue
 
         # Adiciona o buyback para ser analisado posteriormente
-        dt = parse_date(row["transfer_date"])
         bb["fee_bought"] = row["transfer_fee"]
-        bb["age_bought"] = find_age(dt, id)
+        bb["age_bought"] = find_age(row["transfer_date"], id)
         buybacks_list.append(bb)
 
-    dt = parse_date(row["transfer_date"])
-    age_sold = find_age(dt, id)
+    age_sold = find_age(row["transfer_date"], id)
 
     # Supomos que o jogador será comprado pelo time posteriormente e já
     # preenchemos as informações do buyback com o que temos
@@ -98,11 +85,15 @@ print(f"intervalo (média): {round(buybacks['interval'].mean(), 1)}")
 print(f"idade de venda (média): {round(buybacks['age_sold'].mean(), 1)}")
 print(f"idade de compra (média): {round(buybacks['age_bought'].mean(), 1)}")
 
-sns.boxplot(y=buybacks["sqrt_balance"])
+ax = sns.boxplot(y=buybacks["sqrt_balance"])
+ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{np.sign(x) * int(x**2) / 1_000_000}"))
+ax.yaxis.set_label_text("Raiz do saldo (em milhões de euros)")
 plt.show()
 
-sns.boxplot(y=buybacks["balance"])
+ax = sns.boxplot(y=(buybacks["balance"] / 1_000_000))
+ax.yaxis.set_label_text("Saldo (em milhões de euros)")
 plt.show()
 
-sns.boxplot(y=buybacks["interval"])
+ax = sns.boxplot(y=buybacks["interval"])
+ax.yaxis.set_label_text("Intervalo venda-compra")
 plt.show()
