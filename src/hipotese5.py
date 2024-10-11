@@ -5,9 +5,11 @@ import pandas as pd
 import numpy as np
 import inflation
 
+
 """
 Jogadores com preço fora do comum tem o desempenho proporcional?
 """
+
 
 #Função correção da data_diff
 def correct_data_diff(row : pd.core.series.Series) -> int:
@@ -15,17 +17,21 @@ def correct_data_diff(row : pd.core.series.Series) -> int:
         return min((datetime.now().date() - row["date"].date()).days, 365)
     return row["date_diff"].days
 
+
 #Função media ponderada do valor do jogador
 def calc_mean_price(group : pd.core.frame.DataFrame) -> float:
     return round(sum(group["market_value_in_eur"] * group["date_diff"]) / sum(group["date_diff"]), 2)
 
+
 def calc_performance(group : pd.core.frame.DataFrame) -> float:
     return round(sum((-1)*group["yellow_cards"] + (-3)*group["red_cards"] + (8)*group["goals"] + (5)*group["assists"]) * 100 / group.shape[0], 4)
+
 
 def calc_upper_limit(col : pd.core.series.Series) -> float:
     q1 = col.quantile(0.25)
     q3 = col.quantile(0.75)
     return q3 + 1.5 * (q3 - q1)
+
 
 #Abrindo as tabelas que serão utilizadas
 appearances = pd.read_csv('../data/appearances.csv')
@@ -65,5 +71,3 @@ print(performance_upper.describe())
 print(np.corrcoef(performance_upper["performance"], performance_upper["mean_price"])[0,1])
 sns.scatterplot(data=performance_upper, x="log_mean_price", y="performance", color="red")
 plt.show()
-
-
