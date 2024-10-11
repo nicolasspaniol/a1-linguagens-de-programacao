@@ -9,11 +9,6 @@ import inflation
 Jogadores com preço fora do comum tem o desempenho proporcional?
 """
 
-#Função para abrir arquivos csv
-def open_csv(arquivo : str) -> pd.core.frame.DataFrame:
-    with open('../data/'+arquivo+'.csv', 'r', encoding='latin1') as file:
-        return pd.read_csv(file)
-
 #Função correção da data_diff
 def correct_data_diff(row : pd.core.series.Series) -> int:
     if not row["same_player"]:
@@ -33,9 +28,9 @@ def calc_upper_limit(col : pd.core.series.Series) -> float:
     return q3 + 1.5 * (q3 - q1)
 
 #Abrindo as tabelas que serão utilizadas
-appearances = open_csv("appearances")
-player_valuations = open_csv("player_valuations")
-players = open_csv("playes")
+appearances = pd.read_csv('../data/appearances.csv')
+player_valuations = pd.read_csv('../data/player_valuations.csv')
+players = pd.read_csv('../data/players.csv')
 
 #Limpando dados NaN das colunas que serão utilizadas
 appearances.dropna(axis=0, subset=["yellow_cards", "red_cards", "goals", "assists"], inplace=True) 

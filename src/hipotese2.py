@@ -9,16 +9,6 @@ Quais foram as compras de jogadores com melhores e
 piores custo-benefício registradas?
 """
 
-#Função para abrir arquivos csv
-def open_csv(arquivo : str) -> pd.core.frame.DataFrame:
-    """ Função abre um arquivo csv e retorna um Pandas DataFrame.
-
-        :param arquivo: nome do arquivo csv
-        :return: DataFrame com os dados do arquivo csv
-    """
-    with open('../data/'+arquivo+'.csv', 'r', encoding='latin1') as file:
-        return pd.read_csv(file)
-
 #Função para calcular custo-beneficio
 def calc_cost_benefit(group : pd.core.frame.DataFrame) -> float:
     delta_price = (group["market_value_in_eur_shift"].iloc[0] - group["market_value_in_eur"].iloc[0])
@@ -40,9 +30,9 @@ def correct_market_value_in_eur_shift(row : pd.core.series.Series) -> float:
     return row["market_value_in_eur_shift"]
 
 #Abrindo as tabelas que serão utilizadas
-appearances = open_csv("appearances")
-players = open_csv("players")
-transfers = open_csv("transfers")
+appearances = pd.read_csv('../data/appearances.csv')
+transfers = pd.read_csv('../data/transfers.csv')
+players = pd.read_csv('../data/players.csv')
 
 #Limpando dados NaN das colunas que serão utilizadas
 appearances.dropna(axis=0, subset=["yellow_cards", "red_cards", "goals", "assists"], inplace=True) 
@@ -77,10 +67,11 @@ merged.rename(columns={'player_name_x': 'player_name'}, inplace=True)
 #Agrupar por transferência
 cost_benefit = merged.groupby(['player_id', 'player_name', 'transfer_date', 'from_club_id', 'from_club_name', 'to_club_id', 'to_club_name']).apply(calc_cost_benefit).reset_index(name="cost_benefit")
 cost_benefit.sort_values(by='cost_benefit', ascending=False, inplace=True)
-cost_benefit
+print(cost_benefit)
 
 #Plotando o gráfico
 print(cost_benefit[["cost_benefit"]].describe())
 sns.boxplot(data=cost_benefit,  y="cost_benefit", color="red")
+plt.ylim(-200, 200)
 plt.show()
 
