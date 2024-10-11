@@ -38,7 +38,7 @@ merged["rel_count"] = merged.apply(calc_rel_count, axis=1)
 
 # Filtra posições com quantidade insuficiente de dados
 merged = merged.loc[merged["total_count"] > 150]
-print(f"n = {merged["count"].sum()}")
+print(f"n = {merged['count'].sum()}")
 
 # Gráfico de barras - quantidade de cartões recebidos por posição em campo
 ax = sns.barplot(
@@ -48,7 +48,7 @@ ax = sns.barplot(
 )
 # Quebra o texto no eixo X em múltiplas linhas
 labels = [textwrap.fill(label.get_text(), 12) for label in ax.get_xticklabels()]
-ax.set_xticklabels(labels);
+ax.set_xticklabels(labels)
 plt.show()
 
 # Gráfico de barras empilhadas - proporção de cartões vermelhos/amarelhos por
