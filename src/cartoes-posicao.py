@@ -7,14 +7,6 @@ import numpy as np
 import textwrap
 
 
-def calc_rel_count(r):
-    return r["count"] / r["total_count"]
-
-
-def calc_total_count(r):
-    return ((merged["position"] == r["position"]) * merged["count"]).sum()
-
-
 sns.set_theme(style="ticks", palette="pastel")
 
 game_events = pd.read_csv("data/game_events.csv")
@@ -23,9 +15,11 @@ game_lineups = pd.read_csv("data/game_lineups.csv")
 # Filtra apenas os eventos de cartões
 game_events = game_events.loc[game_events["type"] == "Cards"]
 
+# Cria uma coluna para o tipo de cartão: amarelo ou vermelho
 game_events["card_type"] = game_events["description"] \
     .map(lambda e: "yellow" if "yellow" in e.lower() else "red")
 
+# Junta a tabela com os cartões com a tabela de escalações das partidas
 merged = pd.merge(
     game_events,
     game_lineups,
@@ -33,6 +27,8 @@ merged = pd.merge(
     on=["game_id", "player_id"]
 ).groupby(["card_type", "position"]).size().reset_index(name="count")
 
+calc_rel_count = lambda r: ((merged["position"] == r["position"]) * merged["count"]).sum()
+calc_total_count = lambda r: r["count"] / r["total_count"]
 merged["total_count"] = merged.apply(calc_total_count, axis=1)
 merged["rel_count"] = merged.apply(calc_rel_count, axis=1)
 
