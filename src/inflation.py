@@ -30,12 +30,11 @@ def inflation_adj(value: float, period: datetime):
     period_str = period.strftime("%Y-%m")
     now = df.loc[df["period"] == "2024-09"].iloc[0]["cum_inflation"]
     then = df.loc[df["period"] == period_str].iloc[0]["cum_inflation"]
-
-    return value * now / then
+    return round(value * now / then, 2)
 
 
 # Fonte: https://data.ecb.europa.eu/data/datasets/ICP/ICP.M.U2.N.000000.4.ANR
-df = pd.read_csv("src/hcpi.csv")
+df = pd.read_csv("hcpi.csv")
 df["date"] = pd.to_datetime(df["date"], yearfirst=True)
 df["period"] = df["date"].dt.to_period("M").astype(str)
 

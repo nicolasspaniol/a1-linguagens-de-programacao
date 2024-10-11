@@ -1,38 +1,59 @@
-from datetime import date, datetime
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-import inflation
-
-
 """
 Quais foram as compras de jogadores com melhores e 
 piores custo-benefício registradas?
 """
 
+from datetime import date, datetime
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import numpy as np
+import inflation
 
 #Função para calcular custo-beneficio
 def calc_cost_benefit(group : pd.core.frame.DataFrame) -> float:
+    """
+    Calcula o custo-benefício de um jogador baseado em desempenho e valor de mercado.
+    Considera estatísticas como gols, assistências, cartões, e a variação no valor de mercado ao longo do tempo.
+    A fórmula utiliza pesos específicos para cada estatística, resultando em um valor numérico que reflete 
+    se o jogador trouxe um bom retorno em relação ao investimento.
+
+        :param group: DataFrame contendo as estatísticas e o valor de mercado do jogador.
+        :return: Valor numérico que indica o custo-benefício do jogador.
+    """
     delta_price = (group["market_value_in_eur_shift"].iloc[0] - group["market_value_in_eur"].iloc[0])
-    modificador = 10 ** (len(str(delta_price))-1)
+    modificador = 10 ** (len(str(np.abs(int(delta_price))))-1)
+
     #Fórmula para calcular desempenho do jogador, segundo sites esportivos (contem modificacao)
     reduce = sum((-1)*group["yellow_cards"] + (-3)*group["red_cards"] + (8)*group["goals"] + (5)*group["assists"]) * modificador / group.shape[0]
     return round((reduce + delta_price) / group["market_value_in_eur"].iloc[0], 4)
-
     
 #Função correção da data_diff
 def correct_data_shift(row : pd.core.series.Series) -> datetime.date:
-    if not row["same_player"]:
-        return datetime.now().date()
-    return row["date_shift"].date()
+    """
+    Corrige a data da transferência do jogador, considerando se é o mesmo jogador.
+    Se for o mesmo jogador, retorna a data da última transferência; caso contrário, retorna a data atual.
 
+        :param row: Série contendo informações do jogador, incluindo se é o mesmo jogador e a data de transferência.
+        :return: Data corrigida da transferência ou a data atual.
+    """
+    if not row["same_player"]:
+        return datetime.strptime("30/09/2024", "%d/%m/%Y").date()
+    return row["date_shift"].date()
 
 #Função correção da market_value_in_eur_shift
 def correct_market_value_in_eur_shift(row : pd.core.series.Series) -> float:
+    """ 
+    Corrige o valor de mercado de um jogador, levando em consideração a inflação e se é o mesmo jogador.
+    Se for um jogador diferente, retorna o valor de mercado atual. Se for o mesmo jogador, retorna o valor de mercado 
+    ajustado para o período anterior.
+
+        :param row: Série com informações sobre o jogador, incluindo o valor de mercado e a indicação se é o mesmo jogador.
+        :return: Valor de mercado corrigido com base na inflação ou o valor de mercado atual.
+    """
     if not row["same_player"]:
         return row["current_market_value"]
     return row["market_value_in_eur_shift"]
-
 
 #Abrindo as tabelas que serão utilizadas
 appearances = pd.read_csv('../data/appearances.csv')
@@ -47,6 +68,7 @@ players.dropna(axis=0, subset=["name", "market_value_in_eur"], inplace=True)
 #Criando coluna same_player
 transfers.sort_values(['player_id', 'transfer_date'], ascending=True, inplace=True)
 transfers["transfer_date"] = pd.to_datetime(transfers["transfer_date"], yearfirst=True)
+transfers = transfers[transfers["transfer_date"] <= pd.to_datetime("30/09/2024", format="%d/%m/%Y")]
 transfers["same_player"] = -transfers["player_id"].diff(-1) == 0
 
 #Criando coluna data_shift
@@ -54,7 +76,7 @@ transfers['date_shift'] = transfers['transfer_date'].shift(-1)
 transfers["date_shift"] = transfers.apply(correct_data_shift, axis=1)
 
 #Criando coluna market_value_in_eur_shift
-transfers['market_value_in_eur'] = inflation.inflation_adj(transfers['market_value_in_eur'], transfers["transfer_date"])
+transfers['market_value_in_eur'] = transfers.apply(lambda row: inflation.inflation_adj(row['market_value_in_eur'], row['transfer_date']), axis=1)
 transfers['market_value_in_eur_shift'] = transfers['market_value_in_eur'].shift(-1)
 players.rename(columns={'market_value_in_eur': 'current_market_value'}, inplace=True)
 transfers = pd.merge(players[["player_id", "current_market_value"]], transfers, on='player_id')
@@ -72,10 +94,11 @@ merged.rename(columns={'player_name_x': 'player_name'}, inplace=True)
 #Agrupar por transferência
 cost_benefit = merged.groupby(['player_id', 'player_name', 'transfer_date', 'from_club_id', 'from_club_name', 'to_club_id', 'to_club_name']).apply(calc_cost_benefit).reset_index(name="cost_benefit")
 cost_benefit.sort_values(by='cost_benefit', ascending=False, inplace=True)
+
 print(cost_benefit)
 
 #Plotando o gráfico
 print(cost_benefit[["cost_benefit"]].describe())
 sns.boxplot(data=cost_benefit,  y="cost_benefit", color="red")
-plt.ylim(-200, 200)
+plt.ylim(-5, 100)
 plt.show()
