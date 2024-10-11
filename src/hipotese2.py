@@ -4,10 +4,12 @@ import seaborn as sns
 import pandas as pd
 import inflation
 
+
 """
 Quais foram as compras de jogadores com melhores e 
 piores custo-benefício registradas?
 """
+
 
 #Função para calcular custo-beneficio
 def calc_cost_benefit(group : pd.core.frame.DataFrame) -> float:
@@ -16,6 +18,7 @@ def calc_cost_benefit(group : pd.core.frame.DataFrame) -> float:
     #Fórmula para calcular desempenho do jogador, segundo sites esportivos (contem modificacao)
     reduce = sum((-1)*group["yellow_cards"] + (-3)*group["red_cards"] + (8)*group["goals"] + (5)*group["assists"]) * modificador / group.shape[0]
     return round((reduce + delta_price) / group["market_value_in_eur"].iloc[0], 4)
+
     
 #Função correção da data_diff
 def correct_data_shift(row : pd.core.series.Series) -> datetime.date:
@@ -23,11 +26,13 @@ def correct_data_shift(row : pd.core.series.Series) -> datetime.date:
         return datetime.now().date()
     return row["date_shift"].date()
 
+
 #Função correção da market_value_in_eur_shift
 def correct_market_value_in_eur_shift(row : pd.core.series.Series) -> float:
     if not row["same_player"]:
         return row["current_market_value"]
     return row["market_value_in_eur_shift"]
+
 
 #Abrindo as tabelas que serão utilizadas
 appearances = pd.read_csv('../data/appearances.csv')
@@ -74,4 +79,3 @@ print(cost_benefit[["cost_benefit"]].describe())
 sns.boxplot(data=cost_benefit,  y="cost_benefit", color="red")
 plt.ylim(-200, 200)
 plt.show()
-
