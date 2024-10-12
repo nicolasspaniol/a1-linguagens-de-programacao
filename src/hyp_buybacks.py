@@ -28,8 +28,8 @@ def find_age(current_date, id: int) -> float:
 sns.set_theme(style="ticks", palette="pastel")
 locale.setlocale(locale.LC_ALL, "")
 
-players = pd.read_csv("data/players.csv")
-transfers = pd.read_csv("data/transfers.csv")
+players = pd.read_csv("data/football/players.csv")
+transfers = pd.read_csv("data/football/transfers.csv")
 transfers["transfer_date"] = pd.to_datetime(transfers["transfer_date"])
 
 # Filtra o dataset, removendo transferências sem valor reportado, e ordena
@@ -87,7 +87,7 @@ print(f"idade de compra (média): {round(buybacks['age_bought'].mean(), 1)}")
 
 ax = sns.boxplot(y=buybacks["sqrt_balance"])
 ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{np.sign(x) * int(x**2) / 1_000_000}"))
-ax.yaxis.set_label_text("Raiz do saldo (em milhões de euros)")
+ax.yaxis.set_label_text("Saldo (em milhões de euros)")
 plt.show()
 
 ax = sns.boxplot(y=(buybacks["balance"] / 1_000_000))
@@ -95,5 +95,6 @@ ax.yaxis.set_label_text("Saldo (em milhões de euros)")
 plt.show()
 
 ax = sns.boxplot(y=buybacks["interval"])
-ax.yaxis.set_label_text("Intervalo venda-compra")
+print(ax)
+ax.yaxis.set_label_text("Intervalo venda-compra (em anos)")
 plt.show()
