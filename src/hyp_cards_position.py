@@ -30,7 +30,7 @@ merged = pd.merge(
 
 # Calcula a quantidade total de jogadores por posição
 calc_total = lambda r: ((merged["position"] == r["position"]) * merged["count"]).sum()
-merged["total_count"] = merged.apply(calc_total_count, axis=1)
+merged["total_count"] = merged.apply(calc_total, axis=1)
 merged["rel_count"] = merged.apply(lambda r: r["count"] / r["total_count"], axis=1)
 
 # Filtra posições com quantidade insuficiente de dados

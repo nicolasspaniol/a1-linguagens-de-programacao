@@ -100,6 +100,5 @@ ax.yaxis.set_label_text("Saldo (em milhões de euros)")
 plt.show()
 
 ax = sns.boxplot(y=buybacks["interval"])
-print(ax)
 ax.yaxis.set_label_text("Intervalo venda-compra (em anos)")
 plt.show()
