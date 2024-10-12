@@ -1,3 +1,8 @@
+"""
+Módulo responsável por responder a hipótese:
+"Dentre os times visitantes de cada partida, jogar dentro ou fora do país influencia o resultado da partida? (vitória, empate ou derrota)"
+"""
+
 import pandas as pd
 import numpy as np
 import seaborn.objects as so

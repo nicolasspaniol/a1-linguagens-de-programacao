@@ -1,9 +1,15 @@
+"""
+Módulo responsável por responder a hipótese:
+"Pessoas que nascem na primeira metade do ano tem mais chance de se tornarem jogadores profissionais?"
+"""
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedFormatter, FixedLocator, PercentFormatter
 import numpy as np
 from datetime import date, datetime
+
 
 sns.set_theme(style="ticks", palette="pastel")
 

@@ -1,3 +1,8 @@
+"""
+Módulo responsável por responder a hipótese:
+"Vendas e compras posteriores de um jogador por um mesmo time costumam gerar lucro para o time?"
+"""
+
 import pandas as pd
 from datetime import date, datetime
 import locale

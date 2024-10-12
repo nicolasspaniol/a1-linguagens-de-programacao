@@ -1,3 +1,8 @@
+"""
+Módulo responsável por responder a hipótese:
+"A posição dos jogadores em campo influencia na quantidade de cartões que estes recebem?"
+"""
+
 import pandas as pd
 import seaborn as sns
 import seaborn.objects as so
