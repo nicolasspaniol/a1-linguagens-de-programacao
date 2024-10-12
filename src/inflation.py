@@ -34,7 +34,7 @@ def inflation_adj(value: float, period: datetime):
 
 
 # Fonte: https://data.ecb.europa.eu/data/datasets/ICP/ICP.M.U2.N.000000.4.ANR
-df = pd.read_csv("data/hcpi/hcpi.csv")
+df = pd.read_csv("../data/hcpi/hcpi.csv")
 df["date"] = pd.to_datetime(df["date"], yearfirst=True)
 df["period"] = df["date"].dt.to_period("M").astype(str)
 
