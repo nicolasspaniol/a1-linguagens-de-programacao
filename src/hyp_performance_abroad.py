@@ -6,34 +6,33 @@ from matplotlib.ticker import PercentFormatter
 from summary_statistics import cramer_v
 
 
-def calc_resultado(r):
+def label_result(r):
     # Para evitar mais consultas que o necessário
     home_goals = r["home_club_goals"]
     away_goals = r["away_club_goals"]
 
     if home_goals > away_goals:
-        return "derrota"
+        return "Derrota"
     if home_goals == away_goals:
-        return "empate"
+        return "Empate"
     if home_goals < away_goals:
-        return "vitória"
+        return "Vitória"
 
 
 club_games = pd.read_csv("data/football/club_games.csv")
 games = pd.read_csv("data/football/games.csv")
 
-games_abroad = games.loc[games.competition_type == "international_cup"]
-games_home_country = games.loc[games.competition_type != "international_cup"]
-
-games["result"] = games.apply(calc_resultado, axis=1)
-
+# Cria coluna com o resultado da partida: vitória, empate ou derrota
+games["result"] = games.apply(label_result, axis=1)
 games["is_international"] = games["competition_type"] == "international_cup"
 
+# Agrupa e conta a frequência de partidas dentro/fora do país para cada resultado
 games_freq = games.groupby(["result", "is_international"]).size().reset_index(name="count")
 
 total_international = games_freq.loc[games_freq["is_international"]]["count"].sum()
 total_home = games_freq.loc[~games_freq["is_international"]]["count"].sum()
 
+# Divide em uma tabela de dupla entrada por 'is_international' e 'result'
 pivot = games_freq.pivot_table(index="result", columns="is_international", values="count")
 
 games_freq["freq"] = np.where(games_freq["is_international"] == True, games_freq["count"] /
