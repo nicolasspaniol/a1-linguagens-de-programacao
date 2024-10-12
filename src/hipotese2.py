@@ -70,9 +70,9 @@ def correct_market_value_in_eur_shift(row : pd.core.series.Series) -> float:
     return row["market_value_in_eur_shift"]
 
 #Abrindo as tabelas que serão utilizadas
-appearances = pd.read_csv('../data/appearances.csv')
-transfers = pd.read_csv('../data/transfers.csv')
-players = pd.read_csv('../data/players.csv')
+appearances = pd.read_csv('data/appearances.csv')
+transfers = pd.read_csv('data/transfers.csv')
+players = pd.read_csv('data/players.csv')
 
 #Limpando dados NaN das colunas que serão utilizadas
 appearances.dropna(axis=0, subset=["yellow_cards", "red_cards", "goals", "assists"], inplace=True) 

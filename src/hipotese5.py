@@ -75,8 +75,8 @@ def calc_upper_limit(col : pd.core.series.Series) -> float:
     return q3 + 1.5 * (q3 - q1)
 
 #Abrindo as tabelas que serão utilizadas
-appearances = pd.read_csv('../data/appearances.csv')
-player_valuations = pd.read_csv('../data/player_valuations.csv')
+appearances = pd.read_csv('data/appearances.csv')
+player_valuations = pd.read_csv('data/player_valuations.csv')
 
 #Limpando dados NaN das colunas que serão utilizadas
 appearances.dropna(axis=0, subset=["yellow_cards", "red_cards", "goals", "assists"], inplace=True) 
@@ -105,19 +105,13 @@ merged["log_mean_price"] = np.log(merged["mean_price"])
 upper_limit = calc_upper_limit(merged["mean_price"])
 performance_upper = merged[merged["mean_price"] >= upper_limit]
 performance_lower = merged[merged["mean_price"] < upper_limit]
-
 #Plotando os gráficos
-print(performance.describe())
-print(np.corrcoef(performance["performance"], performance["mean_price"])[0,1])
-sns.scatterplot(data=performance, x="log_mean_price", y="performance", color="red")
-plt.show()
-
 print(performance_upper.describe())
-print(np.corrcoef(performance_upper["performance"], performance_upper["mean_price"])[0,1])
+print("Correlação: ", np.corrcoef(performance_upper["performance"], performance_upper["mean_price"])[0,1])
 sns.scatterplot(data=performance_upper, x="log_mean_price", y="performance", color="red")
 plt.show()
 
 print(performance_lower.describe())
-print(np.corrcoef(performance_lower["performance"], performance_lower["mean_price"])[0,1])
+print("Correlação: ", np.corrcoef(performance_lower["performance"], performance_lower["mean_price"])[0,1])
 sns.scatterplot(data=performance_lower, x="log_mean_price", y="performance", color="red")
 plt.show()
