@@ -90,28 +90,23 @@ player_valuations['market_value_in_eur'] = player_valuations.apply(lambda row: i
 player_valuations["same_player"] = -player_valuations["player_id"].diff(-1) == 0
 player_valuations["date_diff"] = -player_valuations["date"].diff(-1)
 player_valuations["date_diff"] = player_valuations.apply(correct_data_diff, axis=1)
-mean_price = player_valuations.groupby("player_id").apply(calc_mean_price).reset_index(name="mean_price")
+mean_price = player_valuations.groupby("player_id").apply(calc_mean_price).reset_index(name="Preco_Medio")
 
 #Criando performance
 #Ordenar os dados, calcular performance do jogador
 appearances.sort_values('player_id', ascending=True, inplace=True)
-performance = appearances.groupby(["player_id", "player_name"]).apply(calc_performance).reset_index(name="performance")
+performance = appearances.groupby(["player_id", "player_name"]).apply(calc_performance).reset_index(name="Desempenho")
 
 #Unindo os dados
-merged = pd.merge(performance, mean_price, how="left", on="player_id").dropna(axis=0).sort_values("mean_price", ascending=True)
+merged = pd.merge(performance, mean_price, how="left", on="player_id").dropna(axis=0).sort_values("Preco_Medio", ascending=True)
 
 #Calculando limite superior
-merged["log_mean_price"] = np.log(merged["mean_price"])
-upper_limit = calc_upper_limit(merged["mean_price"])
-performance_upper = merged[merged["mean_price"] >= upper_limit]
-performance_lower = merged[merged["mean_price"] < upper_limit]
-#Plotando os gráficos
-print(performance_upper.describe())
-print("Correlação: ", np.corrcoef(performance_upper["performance"], performance_upper["mean_price"])[0,1])
-sns.scatterplot(data=performance_upper, x="log_mean_price", y="performance", color="red")
-plt.show()
+merged["Log_Preco_Medio"] = np.log(merged["Preco_Medio"])
+upper_limit = calc_upper_limit(merged["Preco_Medio"])
+merged["maior_que_LS"] = merged["Preco_Medio"] >= upper_limit
 
-print(performance_lower.describe())
-print("Correlação: ", np.corrcoef(performance_lower["performance"], performance_lower["mean_price"])[0,1])
-sns.scatterplot(data=performance_lower, x="log_mean_price", y="performance", color="red")
+#Plotando os gráficos
+print(merged.describe())
+print("Correlação: ", np.corrcoef(merged["Desempenho"], merged["Preco_Medio"])[0,1])
+sns.scatterplot(data=merged, x="Log_Preco_Medio", y="Desempenho", hue="maior_que_LS", color={True: "red", False: "blue"})
 plt.show()

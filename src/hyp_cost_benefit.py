@@ -106,13 +106,13 @@ merged = merged[(merged['date'] >= merged['transfer_date']) & (merged['date'] <=
 merged.rename(columns={'player_name_x': 'player_name'}, inplace=True)
 
 #Agrupar por transferência
-cost_benefit = merged.groupby(['player_id', 'player_name', 'transfer_date', 'from_club_id', 'from_club_name', 'to_club_id', 'to_club_name']).apply(calc_cost_benefit).reset_index(name="cost_benefit")
-cost_benefit.sort_values(by='cost_benefit', ascending=False, inplace=True)
+cost_benefit = merged.groupby(['player_id', 'player_name', 'transfer_date', 'from_club_id', 'from_club_name', 'to_club_id', 'to_club_name']).apply(calc_cost_benefit).reset_index(name="custo_beneficio")
+cost_benefit.sort_values(by='custo_beneficio', ascending=False, inplace=True)
 
 print(cost_benefit)
 
 #Plotando o gráfico
-print(cost_benefit[["cost_benefit"]].describe())
-sns.boxplot(data=cost_benefit,  y="cost_benefit", color="red")
+print(cost_benefit[["custo_beneficio"]].describe())
+sns.boxplot(data=cost_benefit,  y="custo_beneficio", color="red")
 plt.ylim(-5, 8)
 plt.show()
