@@ -7,8 +7,6 @@ import pandas as pd
 import seaborn as sns
 import seaborn.objects as so
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
-import numpy as np
 import textwrap
 
 

@@ -7,8 +7,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedFormatter, FixedLocator, PercentFormatter
-import numpy as np
-from datetime import date, datetime
 
 
 sns.set_theme(style="ticks", palette="pastel")
