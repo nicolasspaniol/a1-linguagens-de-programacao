@@ -1,11 +1,11 @@
 import pandas as pd
-from datetime import date, datetime
+from datetime import datetime
 import locale
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import numpy as np
-import math
+
 
 
 def find_age(current_date, id: int) -> float:

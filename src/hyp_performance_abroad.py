@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 import seaborn.objects as so
-import matplotlib.pyplot as plt
-from matplotlib.ticker import PercentFormatter
 from summary_statistics import cramer_v
 
 
