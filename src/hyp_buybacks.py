@@ -33,8 +33,8 @@ def find_age(current_date, id: int) -> float:
 sns.set_theme(style="ticks", palette="pastel")
 locale.setlocale(locale.LC_ALL, "")
 
-players = pd.read_csv("data/football/players.csv")
-transfers = pd.read_csv("data/football/transfers.csv")
+players = pd.read_csv("data/players.csv")
+transfers = pd.read_csv("data/transfers.csv")
 transfers["transfer_date"] = pd.to_datetime(transfers["transfer_date"])
 
 # Filtra o dataset, removendo transferências sem valor reportado, e ordena
@@ -90,12 +90,33 @@ print(f"intervalo (média): {round(buybacks['interval'].mean(), 1)}")
 print(f"idade de venda (média): {round(buybacks['age_sold'].mean(), 1)}")
 print(f"idade de compra (média): {round(buybacks['age_bought'].mean(), 1)}")
 
-ax = sns.boxplot(y=buybacks["sqrt_balance"])
-ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{np.sign(x) * int(x**2) / 1_000_000}"))
+buybacks['interval_group'] = pd.cut(
+    buybacks['interval'], 
+    bins=range(0, 14, 2),  
+    right=False 
+)
+
+# Agrupar por interval_group e contar
+result = buybacks.groupby('interval_group')["player_id"].count()
+result.to_csv("buybacks.csv")
+
+buybacks["balance"] /=1_000_000
+buybacks['interval_group'] = pd.cut(
+    buybacks['balance'], 
+    bins=[-100, -25, -5, -2, 0, 2, 5, 25, 100],  
+    right=False 
+)
+print(buybacks.head())
+print(len(buybacks["player_id"]))
+result = buybacks.groupby('interval_group')["player_id"].count()
+result.to_csv("buybacks2.csv")
+
+ax = sns.boxplot(y=(buybacks["balance"]))
 ax.yaxis.set_label_text("Saldo (em milhões de euros)")
 plt.show()
 
-ax = sns.boxplot(y=(buybacks["balance"] / 1_000_000))
+ax = sns.boxplot(y=buybacks["sqrt_balance"])
+ax.yaxis.set_major_formatter(mtick.FuncFormatter(lambda x, pos: f"{np.sign(x) * int(x**2) / 1_000_000}"))
 ax.yaxis.set_label_text("Saldo (em milhões de euros)")
 plt.show()
 

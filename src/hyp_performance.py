@@ -102,11 +102,30 @@ merged = pd.merge(performance, mean_price, how="left", on="player_id").dropna(ax
 
 #Calculando limite superior
 merged["Log_Preco_Medio"] = np.log(merged["Preco_Medio"])
-upper_limit = calc_upper_limit(merged["Preco_Medio"])
-merged["maior_que_LS"] = merged["Preco_Medio"] >= upper_limit
+upper_limit = np.log(calc_upper_limit(merged["Preco_Medio"]))
+
+df = pd.DataFrame({
+        "Log_Preco_Medio_do_jogador": [],
+        "Quartil_1": [],
+        "Media_do_desempenho_dos_jogadores_nesse_intervalo": [],
+        "Quartil_3": []
+        
+    })
+
+for i in range(-6, 4):
+    inf = upper_limit + i
+    sup = upper_limit + i + 1
+    intervalo = merged[(merged["Log_Preco_Medio"] >= inf) & (merged["Log_Preco_Medio"] < sup)]
+    q1 = intervalo["Desempenho"].quantile(0.25)
+    q2 = intervalo["Desempenho"].quantile(0.5)
+    q3 = intervalo["Desempenho"].quantile(0.75)
+    df.loc[i+6] = [(sup+inf)/2, q1, q2, q3]
+    print(inf, sup, q1, q2, q3)
+
+df.to_csv("performance.csv")
 
 #Plotando os gráficos
-print(merged.describe())
-print("Correlação: ", np.corrcoef(merged["Desempenho"], merged["Preco_Medio"])[0,1])
-sns.scatterplot(data=merged, x="Log_Preco_Medio", y="Desempenho", hue="maior_que_LS", color={True: "red", False: "blue"})
-plt.show()
+# print(merged.describe())
+# print("Correlação: ", np.corrcoef(merged["Desempenho"], merged["Preco_Medio"])[0,1])
+# sns.lineplot(data=df, x="Intervalo", y="Média", color="blue")
+# plt.show()
